@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Email Marketing - Sub Category list</title>
+    <title>Email Marketing - Inbox list</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -53,9 +55,34 @@
 
     <link href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
 
-    <!-- endinject -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-    <link rel="icon" type="Quiz/png" sizes="16x16" href="{{asset('img/favicon.png')}}">
+    <link rel="icon" type="admin/png" sizes="16x16" href="{{asset('img/favicon.png')}}">
+
+    <style>
+      .select2-container--default .select2-selection--single, .select2-container--default .select2-selection--multiple{
+        height: 0% !important;
+      }
+      .select2-container--default .select2-selection--single .select2-selection__arrow:after{
+        content: "\f107";
+        position: absolute;
+        padding-top: 17px !important;
+        font-family: "Line Awesome Free";
+        font-weight: 900;
+        font-size: 12px;
+      }
+      .ms-options-wrap > .ms-options > ul li.selected label{
+        background-color: rgb(0 81 255 / 79%) !important;
+        padding-left: 40px;
+        color: rgb(12, 12, 12) !important;
+      }
+      .ms-options-wrap > .ms-options > ul li label
+      {
+        padding: 4px 4px 4px 40px;
+      }
+    </style>
+
+    <!-- endinject -->
 </head>
 <body class="layout-light side-menu overlayScroll">
     <div class="mobile-author-actions"></div>
@@ -70,7 +97,7 @@
                             <div class="breadcrumb-main">
                               <ul class="atbd-breadcrumb nav">
                                 <li class="atbd-breadcrumb__item">
-                                    <a href="{{url('Quiz/sub_category_list')}}">
+                                    <a href="{{url('admin/send_emails_list')}}">
                                       <span class="la la-home"></span>
                                     </a>
                                     <span class="breadcrumb__seperator">
@@ -78,7 +105,7 @@
                                   </span>
                                 </li>
                                 <li class="atbd-breadcrumb__item">
-                                    <a href="{{url('Quiz/sub_category_list')}}">
+                                    <a href="{{url('admin/send_emails_list')}}">
                                         Home
                                     </a>
                                     <span class="breadcrumb__seperator">
@@ -86,12 +113,12 @@
                                     </span>
                                 </li>
                                 <li class="atbd-breadcrumb__item">
-                                    <span>Sub Category List</span>
+                                    <span>Inbox</span>
                                 </li>
                               </ul>
                               <div class="action-btn">
-                                <a href="{{url('Quiz/add_sub_category')}}" class="btn btn-sm btn-primary btn-add">
-                                  <i class="la la-plus"></i> Add New Sub Category</a>
+                                <a href="{{url('admin/send_emails')}}" class="btn btn-sm btn-primary btn-add">
+                                  <i class="la la-plus"></i> Compose</a>
                               </div>
                             </div>
                         </div>
@@ -137,7 +164,7 @@
                   @endif
                       <div class="card">
                           <div class="card-header color-dark fw-500">
-                            Sub Category List
+                            Inbox
                           </div>
                           <div class="card-body">
                               <div class="userDatatable global-shadow border-0 bg-white w-100">
@@ -155,18 +182,24 @@
                                                   </th>
                                                   <th>
                                                     <span class="userDatatable-title">S No</span>
+                                                  </th> 
+                                                  <th>
+                                                    <span class="userDatatable-title">Sending Status</span>
                                                   </th>
                                                   <th>
-                                                      <span class="userDatatable-title">Sub Category Name</span>
+                                                      <span class="userDatatable-title">Template Category Name</span>
                                                   </th>
                                                   <th>
-                                                      <span class="userDatatable-title">Sub Category Description</span>
+                                                      <span class="userDatatable-title">Template Name</span>
                                                   </th>
                                                   <th>
-                                                    <span class="userDatatable-title">Category Name</span>
+                                                    <span class="userDatatable-title">Total Emails</span>
                                                   </th>
                                                   <th>
-                                                      <span class="userDatatable-title">Sub Category Image</span>
+                                                    <span class="userDatatable-title">Success Emails</span>
+                                                  </th>
+                                                  <th>
+                                                    <span class="userDatatable-title">Bounced Count</span>
                                                   </th>
                                                   <th>
                                                       <span class="userDatatable-title">Created </span>
@@ -184,7 +217,7 @@
                                           </thead>
                                           <tbody>
                                             @php $sno = 1;@endphp
-                                            @foreach($sub_categorys as $sub_category)
+                                            @foreach($SendEmail as $sub_category)
                                               <tr>
                                                   <td>
                                                       <div class="d-flex">
@@ -206,31 +239,44 @@
                                                     </div>
                                                   </td>
                                                   <td>
+                                                    <div class="userDatatable-content d-inline-block">
+                                                      @if($sub_category->mail_processing == '2')
+                                                        <span class="bg-opacity-success  color-success rounded-pill userDatatable-content-status active">Completed</span>
+                                                      @else
+                                                      <span class="bg-opacity-warning  color-warning rounded-pill userDatatable-content-status active">Processing</span>
+                                                      @endif
+                                                    </div>
+                                                  </td>
+                                                  <td>
                                                     <div class="userDatatable-inline-title">
                                                       <a href="#" class="text-dark fw-500">
-                                                          <h6>{{$sub_category->sub_category_name}}</h6>
+                                                          <h6>{{$sub_category->template_category->temp_category_name ?? 'none'}}</h6>
                                                       </a>
                                                   </div>
                                                   </td>
                                                   <td>
                                                       <div class="userDatatable-content">
-                                                        {{$sub_category->sub_category_description}}
+                                                        {{$sub_category->template->template_name ?? 'none'}}
                                                       </div>
                                                   </td>
                                                   <td>
                                                     <div class="userDatatable-content">
-                                                      {{$sub_category->category->category_name ?? 'nil'}}
+                                                      {{$sub_category->user_count}}
                                                     </div>
                                                   </td>
                                                   <td>
                                                     <div class="userDatatable-content">
-                                                      @if($sub_category->sub_category_image == null)   
-                                                        <center><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdoCQ7-yS62tALBS9_FY5pExwg8Lvvsie6Iml51YO_JQ&s" style="height:50px; width:auto;border-radius:70%;"></center>
-                                                      @elseif($sub_category->image_type == 1)
-                                                        <center><img  src="{{asset($sub_category->sub_category_image ) }}"  style="height:50px; width:auto;border-radius:70%;"></center>
-                                                      @else
-                                                        <center><img  src="{{$sub_category->sub_category_image}}" style="height:60px; width:70px;border-radius:50%;"></center>
-                                                      @endif
+                                                      {{(int)$sub_category->user_count - $sub_category->get_mapped_cat_count->count() ?? ''}}
+                                                    </div>
+                                                  </td>
+                                                  <td>
+                                                    <div class="btn-group">
+                                                      <div class="userDatatable-content d-inline-block" >
+                                                        {{ $sub_category->get_mapped_cat_count->count();}} 
+                                                      </div>
+                                                      <div style="padding-left:10px;">
+                                                        <button value="{{$sub_category->id}}" class="bg-opacity-success color-success rounded-pill userDatatable-content-status active use-address" style="border:0" id="view">View</button>
+                                                      </div>
                                                     </div>
                                                   </td>
                                                   <td>
@@ -253,12 +299,12 @@
                                                           <span data-feather="more-vertical"></span>
                                                       </button>
                                                       <div class="dropdown-default dropdown-menu bg-dark">
-                                                          <div class="dropdown-item" style="padding-left:55px !important;"><form action={{url("Quiz/edit_sub_category/".$sub_category->id)}} method="POST">
+                                                          <div class="dropdown-item" style="padding-left:55px !important;"><form action={{url("admin/edit_send_emails/".$sub_category->id)}} method="POST">
                                                             {{csrf_field()}}
                                                             <button  type="submit" class="btn btn-icon btn-circle btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit App"><span data-feather="edit"></span></button>
                                                             </form>
                                                           </div>
-                                                          <div class="dropdown-item" style="padding-left:50px !important;"><form action={{url("Quiz/delete_sub_category/".$sub_category->id)}} method="POST"  style="padding-left:5px;">
+                                                          <div class="dropdown-item" style="padding-left:50px !important;"><form action={{url("admin/delete_send_emails/".$sub_category->id)}} method="POST"  style="padding-left:5px;">
                                                             {{csrf_field()}}
                                                             <button  type="submit" class="btn btn-icon btn-circle btn-outline-danger" onclick="return confirm('Are you sure you want to delete this item?');" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete App"><span data-feather="trash-2"></span></button>
                                                           </form></div>
@@ -278,7 +324,7 @@
                                                     }
                                                   </style>
                                                   <td>
-                                                    <form action="{{url('Quiz/sub_category_status_update')}}" method="POST">
+                                                    <form action="{{url('admin/sub_category_status_update')}}" method="POST">
                                                       @csrf
                                                       <input type="hidden" name="sub_cat_id" value="{{$sub_category->id}}">
                                                       @if($sub_category->is_active == '0')
@@ -299,6 +345,37 @@
                                               @endforeach
                                           </tbody>
                                       </table>
+                                      <div class="modal-basic modal fade" id="staticBackdrop2" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                        <div class="modal-dialog modal-md" role="document">
+                                            <div class="modal-content modal-bg-white ">
+                                                <div class="modal-header">
+                                                  <h6 class="modal-title">Bounced Email List</h6>
+                                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                                                </div>
+                                                <style>
+                                                  .select2-container{
+                                                    z-index: 999999;
+                                                  }
+                                                </style>
+                                                <form action="{{url('admin/blocked')}}" method="post" enctype="multipart/form-data">
+                                                  @csrf
+                                                  <div class="modal-body">
+                                                    <div class="form-group row">
+                                                      <div class="col-sm-12">
+                                                        <select name="sub_category_id[]" multiple="multiple" required id="template_sub_category" class="form-control js-example-basic-multiple" style="z-index: 999;position: absolute;">                                         
+                                                        </select>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div class="modal-footer">
+                                                      <button type="submit" class="btn btn-primary btn-sm" id="savechanges">Save changes</button>
+                                                      <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+                                                  </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                      </div>
                                   </div>
                               </div>
                           </div>
@@ -331,57 +408,101 @@
         </span>
     </div>
     <div class="overlay-dark-sidebar"></div>
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <!-- inject:js-->
     <script src="{{ asset('assets/vendor_assets/js/jquery/jquery-3.5.1.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/jquery/jquery-ui.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/bootstrap/popper.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/bootstrap/bootstrap.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/moment/moment.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/accordion.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/autoComplete.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/Chart.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/charts.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/daterangepicker.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/drawer.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/dynamicBadge.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/dynamicCheckbox.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/feather.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/footable.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/fullcalendar@5.2.0.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/google-chart.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/jquery-jvectormap-2.0.5.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/jquery-jvectormap-world-mill-en.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/jquery.countdown.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/jquery.filterizr.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/jquery.magnific-popup.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/jquery.mCustomScrollbar.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/jquery.peity.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/jquery.star-rating-svg.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/leaflet.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/leaflet.markercluster.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/loader.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/message.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/moment.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/muuri.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/notification.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/popover.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/select2.full.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/slick.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/trumbowyg.min.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/js/wickedpicker.min.js')}}"></script>
-          <script src="{{ asset('assets/theme_assets/js/drag-drop.js')}}"></script>
-          <script src="{{ asset('assets/theme_assets/js/footable.js')}}"></script>
-          <script src="{{ asset('assets/theme_assets/js/full-calendar.js')}}"></script>
-          <script src="{{ asset('assets/theme_assets/js/googlemap-init.js')}}"></script>
-          <script src="{{ asset('assets/theme_assets/js/icon-loader.js')}}"></script>
-          <script src="{{ asset('assets/theme_assets/js/jvectormap-init.js')}}"></script>
-          <script src="{{ asset('assets/theme_assets/js/leaflet-init.js')}}"></script>
-          <script src="{{ asset('assets/theme_assets/js/main.js')}}"></script>
-          <script src="{{ asset('assets/vendor_assets/simple-datatables/simple-datatables.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/jquery/jquery-ui.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/bootstrap/popper.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/bootstrap/bootstrap.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/moment/moment.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/accordion.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/autoComplete.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/Chart.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/charts.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/daterangepicker.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/drawer.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/dynamicBadge.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/dynamicCheckbox.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/feather.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/footable.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/fullcalendar@5.2.0.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/google-chart.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/jquery-jvectormap-2.0.5.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/jquery-jvectormap-world-mill-en.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/jquery.countdown.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/jquery.filterizr.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/jquery.magnific-popup.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/jquery.mCustomScrollbar.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/jquery.peity.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/jquery.star-rating-svg.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/leaflet.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/leaflet.markercluster.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/loader.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/message.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/moment.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/muuri.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/notification.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/popover.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/select2.full.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/slick.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/trumbowyg.min.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/js/wickedpicker.min.js')}}"></script>
+    <script src="{{ asset('assets/theme_assets/js/drag-drop.js')}}"></script>
+    <script src="{{ asset('assets/theme_assets/js/footable.js')}}"></script>
+    <script src="{{ asset('assets/theme_assets/js/full-calendar.js')}}"></script>
+    <script src="{{ asset('assets/theme_assets/js/googlemap-init.js')}}"></script>
+    <script src="{{ asset('assets/theme_assets/js/icon-loader.js')}}"></script>
+    <script src="{{ asset('assets/theme_assets/js/jvectormap-init.js')}}"></script>
+    <script src="{{ asset('assets/theme_assets/js/leaflet-init.js')}}"></script>
+    <script src="{{ asset('assets/theme_assets/js/main.js')}}"></script>
+    <script src="{{ asset('assets/vendor_assets/simple-datatables/simple-datatables.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+      $('.use-address').on('click',function(){
+        var id = $(this).val();
+        $.ajaxSetup({
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
+        });
+        $.ajax({
+          url:"{{url('admin/block_list_count')}}",
+          type:"POST",
+          data: {block_id: id},
+          success:function(data) 
+          {
+              $('#template_sub_category').empty();
+              var data = data.subcategories;
+              if(data.length > 0)
+              {
+                jQuery.noConflict();
+                $('#staticBackdrop2').modal('show');
+                $.each(data,function(index,template_sub_category)
+                {
+                  $('#template_sub_category').append('<option class="text-dark" value="'+template_sub_category.user_id+'" title="'+template_sub_category.reason_message+'" selected>'+template_sub_category.bounced_email+'</option>');
+                })
+              }
+            }
+          })
+      });
+    </script>
 
     <!-- endinject-->
     <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    
+    <script>
+      $(document).ready(function() {
+          $('.js-example-basic-multiple').select2({
+            placeholder: {
+                text: 'Select a Email'
+              },
+          }); 
+      });
+    </script>
     <!-- End custom js for this page -->
     <script>
       $(document).ready( function () {

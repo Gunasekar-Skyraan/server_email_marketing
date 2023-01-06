@@ -51,137 +51,6 @@
                     </li>
                 @endif
                 
-               
-                {{-- @if((Auth::guard('admin')->user()->role == 'SuperAdmin') || (in_array('set_2',$lists)))
-                <li class="has-child @if((Route::currentRouteName() == 'Quiz.applist') || (Route::currentRouteName() == 'Quiz.add_app') || (Route::currentRouteName() == 'Quiz.edit') || (Route::currentRouteName() == 'Quiz.mapping')) {{'open'}} @endif @if((Route::currentRouteName() == 'Quiz.categorylist') || (Route::currentRouteName() == 'Quiz.add_category') || (Route::currentRouteName() == 'Quiz.edit_category') ) {{'open'}} @endif @if((Route::currentRouteName() == 'Quiz.Quiz_list') || (Route::currentRouteName() == 'Quiz.add_Quiz') || (Route::currentRouteName() == 'Quiz.edit.Quiz') ) {{'open'}} @endif  @if((Route::currentRouteName() == 'Quiz.sub_categorylist') || (Route::currentRouteName() == 'Quiz.add_sub_category') || (Route::currentRouteName() == 'Quiz.edit_sub_category' || (Route::currentRouteName() == 'Quiz.bulk_Quiz')) ) {{'open'}} @endif">
-                    <a href="{{url('Quiz/app_list')}}" class="@if((Route::currentRouteName() == 'Quiz.applist') || (Route::currentRouteName() == 'Quiz.add_app') || (Route::currentRouteName() == 'Quiz.edit') || (Route::currentRouteName() == 'Quiz.mapping')) {{'active'}} @endif @if((Route::currentRouteName() == 'Quiz.categorylist') || (Route::currentRouteName() == 'Quiz.add_category') || (Route::currentRouteName() == 'Quiz.edit_category')) {{'active'}} @endif @if((Route::currentRouteName() == 'Quiz.Quiz_list') || (Route::currentRouteName() == 'Quiz.add_Quiz') || (Route::currentRouteName() == 'Quiz.edit.Quiz') ) {{'active'}} @endif @if((Route::currentRouteName() == 'Quiz.sub_categorylist') || (Route::currentRouteName() == 'Quiz.add_sub_category') || (Route::currentRouteName() == 'Quiz.edit_sub_category') || (Route::currentRouteName() == 'Quiz.bulk_Quiz') ) {{'active'}} @endif">
-                        <span data-feather="layers" class="nav-icon"></span>
-                        <span class="menu-text">Quiz Set 2</span>
-                        <span class="toggle-icon"></span>
-                    </a>
-                    <ul>
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.applist') ? 'active':'' }}" href="{{url( 'Quiz/app_list')}}"> Apps List</a>
-                        </li>
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.add_app') ? 'active':'' }}" href="{{url('Quiz/admin_add_app')}}"> Add App</a>
-                        </li>
-                        @if((Route::currentRouteName() == 'Quiz.edit'))
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.edit') ? 'active':'' }}" href="{{Request::segment(3)}}">Apps Manage</a>
-                        </li>
-                        @endif
-                        @if((Route::currentRouteName() == 'Quiz.mapping'))
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.mapping') ? 'active':'' }}" href="{{Request::segment(3)}}">Mapping Category</a>
-                        </li>
-                        @endif
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.categorylist') ? 'active':'' }}" href="{{url('Quiz/category_list')}}">Category List</a>
-                        </li>
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.add_category') ? 'active':'' }}" href="{{url('Quiz/add_category')}}"> Add Category</a>
-                        </li>
-                        @if((Route::currentRouteName() == 'Quiz.edit_category'))
-                            <li>
-                                <a class="{{ (Route::currentRouteName() == 'Quiz.edit_category') ? 'active':'' }}" href="{{Request::segment(3)}}">Category Manage</a>
-                            </li>
-                        @endif
-
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.sub_categorylist') ? 'active':'' }}" href="{{url('Quiz/sub_category_list')}}">Sub Category List</a>
-                        </li>
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.add_sub_category') ? 'active':'' }}" href="{{url('Quiz/add_sub_category')}}"> Add New Sub Category</a>
-                        </li>
-                        @if((Route::currentRouteName() == 'Quiz.edit_sub_category'))
-                            <li>
-                                <a class="{{ (Route::currentRouteName() == 'Quiz.edit_sub_category') ? 'active':'' }}" href="{{Request::segment(3)}}">Sub Category Manage</a>
-                            </li>
-                        @endif
-
-
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.Quiz_list') ? 'active':'' }}" href="{{url('Quiz/Quizs')}}">Quiz List</a>
-                        </li>
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.add_Quiz') ? 'active':'' }}" href="{{url('Quiz/add_Quizs')}}">Add Quiz</a>
-                        </li>
-                        @if((Route::currentRouteName() == 'Quiz.edit.Quiz'))
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'Quiz.edit.Quiz') ? 'active':'' }}" href="{{Request::segment(3)}}">Quiz Manage</a>
-                        </li>
-                        @endif
-                    </ul>
-                </li>
-                @endif
-                @if((Auth::guard('admin')->user()->role == 'SuperAdmin') || (in_array('set_3',$lists)))
-                <li class="has-child @if((Route::currentRouteName() == 'QuizSet3.applist') || (Route::currentRouteName() == 'QuizSet3.add_app') || (Route::currentRouteName() == 'QuizSet3.edit') || (Route::currentRouteName() == 'QuizSet3.mapping') || (Route::currentRouteName() == 'QuizSet3.category_app')) {{'open'}} @endif @if((Route::currentRouteName() == 'QuizSet3.categorylist') || (Route::currentRouteName() == 'QuizSet3.add_category') || (Route::currentRouteName() == 'QuizSet3.edit_category') ) {{'open'}} @endif @if((Route::currentRouteName() == 'QuizSet3.QuizSet3_list') || (Route::currentRouteName() == 'QuizSet3.add_QuizSet3') || (Route::currentRouteName() == 'QuizSet3.edit.QuizSet3') ) {{'open'}} @endif @if((Route::currentRouteName() == 'QuizSet3.sub_categorylist') || (Route::currentRouteName() == 'QuizSet3.add_sub_category') || (Route::currentRouteName() == 'QuizSet3.edit_sub_category') ) {{'open'}} @endif">
-                    <a href="{{url('QuizSet3/app_list')}}" class="@if((Route::currentRouteName() == 'QuizSet3.applist') || (Route::currentRouteName() == 'QuizSet3.add_app') || (Route::currentRouteName() == 'QuizSet3.edit') || (Route::currentRouteName() == 'QuizSet3.mapping') || (Route::currentRouteName() == 'QuizSet3.category_app')) {{'active'}} @endif @if((Route::currentRouteName() == 'QuizSet3.categorylist') || (Route::currentRouteName() == 'QuizSet3.add_category') || (Route::currentRouteName() == 'QuizSet3.edit_category')) {{'active'}} @endif @if((Route::currentRouteName() == 'QuizSet3.QuizSet3_list') || (Route::currentRouteName() == 'QuizSet3.add_QuizSet3') || (Route::currentRouteName() == 'QuizSet3.edit.QuizSet3') ) {{'active'}} @endif @if((Route::currentRouteName() == 'QuizSet3.sub_categorylist') || (Route::currentRouteName() == 'QuizSet3.add_sub_category') || (Route::currentRouteName() == 'QuizSet3.edit_sub_category') ) {{'active'}} @endif">
-                        <span data-feather="layers" class="nav-icon"></span>
-                        <span class="menu-text">Quiz Set 3</span>
-                        <span class="toggle-icon"></span>
-                    </a>
-                    <ul>
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.applist') ? 'active':'' }}" href="{{url( 'QuizSet3/app_list')}}"> Apps List</a>
-                        </li>
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.add_app') ? 'active':'' }}" href="{{url('QuizSet3/admin_add_app')}}"> Add App</a>
-                        </li>
-                        @if((Route::currentRouteName() == 'QuizSet3.edit'))
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.edit') ? 'active':'' }}" href="{{Request::segment(3)}}">Apps Manage</a>
-                        </li>
-                        @endif
-                        @if((Route::currentRouteName() == 'QuizSet3.mapping'))
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.mapping') ? 'active':'' }}" href="{{Request::segment(3)}}">Mapping Category</a>
-                        </li> 
-                        @endif
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.categorylist') ? 'active':'' }}" href="{{url('QuizSet3/category_list')}}">Category List</a>
-                        </li>
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.add_category') ? 'active':'' }}" href="{{url('QuizSet3/add_category')}}"> Add Category</a>
-                        </li>
-                        @if((Route::currentRouteName() == 'QuizSet3.edit_category'))
-                            <li>
-                                <a class="{{ (Route::currentRouteName() == 'QuizSet3.edit_category') ? 'active':'' }}" href="{{Request::segment(3)}}">Category Manage</a>
-                            </li>
-                        @endif
-
-                        @if((Route::currentRouteName() == 'QuizSet3.category_app'))
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.category_app') ? 'active':'' }}" href="{{Request::segment(3)}}">Mapping Sub Category</a>
-                        </li> 
-                        @endif
-
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.sub_categorylist') ? 'active':'' }}" href="{{url('QuizSet3/sub_category_list')}}">Sub Category List</a>
-                        </li>
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.add_sub_category') ? 'active':'' }}" href="{{url('QuizSet3/add_sub_category')}}"> Add New Sub Category</a>
-                        </li>
-                        @if((Route::currentRouteName() == 'QuizSet3.edit_sub_category'))
-                            <li>
-                                <a class="{{ (Route::currentRouteName() == 'QuizSet3.edit_sub_category') ? 'active':'' }}" href="{{Request::segment(3)}}">Sub Category Manage</a>
-                            </li>
-                        @endif
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.QuizSet3_list') ? 'active':'' }}" href="{{url('QuizSet3/fetch_QuizSet3')}}">Quiz List</a>
-                        </li>
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.add_QuizSet3') ? 'active':'' }}" href="{{url('QuizSet3/add_QuizSet3s')}}">Add Quiz</a>
-                        </li>
-                        @if((Route::currentRouteName() == 'QuizSet3.edit.QuizSet3'))
-                        <li>
-                            <a class="{{ (Route::currentRouteName() == 'QuizSet3.edit.QuizSet3') ? 'active':'' }}" href="{{Request::segment(3)}}">Quiz Manage</a>
-                        </li>
-                        @endif
-                    </ul>
-                </li>
-                @endif --}}
 
                 @if((Auth::guard('admin')->user()->role == 'SuperAdmin') || (in_array('set_4',$lists)))
                 <li class="has-child @if((Route::currentRouteName() == 'users.users') || (Route::currentRouteName() == 'users.add_users') || (Route::currentRouteName() == 'users.edit_users') ) {{'open'}} @endif">
@@ -241,8 +110,8 @@
                 @endif
 
                 @if((Auth::guard('admin')->user()->role == 'SuperAdmin') || (in_array('set_3',$lists)))
-                <li class="has-child @if((Route::currentRouteName() == 'admin.emailslist') || (Route::currentRouteName() == 'admin.add_emails') || (Route::currentRouteName() == 'admin.send_emails') || (Route::currentRouteName() == 'admin.edit_emails') ) {{'open'}} @endif ">
-                    <a href="{{url('admin/app_list')}}" class="@if((Route::currentRouteName() == 'admin.emailslist') || (Route::currentRouteName() == 'admin.add_emails') || (Route::currentRouteName() == 'admin.send_emails') || (Route::currentRouteName() == 'admin.edit_emails')) {{'active'}} @endif ">
+                <li class="has-child @if((Route::currentRouteName() == 'admin.add_block') || (Route::currentRouteName() == 'admin.edit_send_emails') || (Route::currentRouteName() == 'admin.send_emails_list') || (Route::currentRouteName() == 'admin.emailslist') || (Route::currentRouteName() == 'admin.add_emails') || (Route::currentRouteName() == 'admin.send_emails') || (Route::currentRouteName() == 'admin.edit_emails') ) {{'open'}} @endif ">
+                    <a href="{{url('admin/app_list')}}" class="@if((Route::currentRouteName() == 'admin.add_block') || (Route::currentRouteName() == 'admin.edit_send_emails') || (Route::currentRouteName() == 'admin.send_emails_list') || (Route::currentRouteName() == 'admin.emailslist') || (Route::currentRouteName() == 'admin.add_emails') || (Route::currentRouteName() == 'admin.send_emails') || (Route::currentRouteName() == 'admin.edit_emails')) {{'active'}} @endif ">
                         <span data-feather="layers" class="nav-icon"></span>
                         <span class="menu-text">Email Marketing</span>
                         <span class="toggle-icon"></span>
@@ -262,6 +131,17 @@
                         <li>
                             <a class="{{ (Route::currentRouteName() == 'admin.send_emails') ? 'active':'' }}" href="{{url('admin/send_emails')}}"> Compose</a>
                         </li> 
+                        <li>
+                            <a class="{{ (Route::currentRouteName() == 'admin.send_emails_list') ? 'active':'' }}" href="{{url('admin/send_emails_list')}}"> Inbox</a>
+                        </li>
+                        <li>
+                            <a class="{{ (Route::currentRouteName() == 'admin.add_block') ? 'active':'' }}" href="{{url('admin/add_block')}}"> Add to block</a>
+                        </li>
+                        @if((Route::currentRouteName() == 'admin.edit_send_emails'))
+                            <li>
+                                <a class="{{ (Route::currentRouteName() == 'admin.edit_send_emails') ? 'active':'' }}" href="{{url('admin/edit_send_emails')}}"> Manage</a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
                 @endif

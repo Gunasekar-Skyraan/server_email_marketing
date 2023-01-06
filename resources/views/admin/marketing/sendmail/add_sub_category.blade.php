@@ -157,15 +157,132 @@
                     @if(Session::has("failed"))
                       <div class="alert alert-danger alert-dismissible"><button type="button" class="close">&times;</button>{{Session::get('failed')}}</div>
                     @endif
+                    
+                    {{-- <style>
+                        /* .container {
+                          width: 400px;
+                          height: 50px;
+                          position: relative;
+                          border: 1px solid black;
+                        } */
+                      
+                      .progress {
+                        background: rgb(23, 23, 103);
+                        float: left;
+                        color: white;
+                        width: 100%;
+                        height: 50px;
+                        line-height: 50px;
+                        animation-name: slideInFromLeft;
+                        animation-duration: 30s;
+                        animation-timing-function: cubic-bezier(0, .9, .9, .999);
+                        text-align: center;
+                      }
+                      
+                      .percent::before {
+                        content: counter(count);
+                        animation-name: counter;
+                        animation-duration: 30s;
+                        animation-timing-function: cubic-bezier(0, .9, .9, .999);
+                        counter-reset: count 0;
+                      }
+                      
+                      @keyframes slideInFromLeft {
+                        0% {
+                          width: 0%;
+                        }
+                        99% {
+                          width: 50%;
+                        }
+                      }
+                      
+                        @keyframes counter {
+                        0% {
+                          counter-increment: count 0;
+                        }
+                        10% {
+                          counter-increment: count 10;
+                        }
+                        20% {
+                          counter-increment: count 20;
+                        }
+                        30% {
+                          counter-increment: count 30;
+                        }
+                        40% {
+                          counter-increment: count 40;
+                        }
+                        50% {
+                          counter-increment: count 50;
+                        }
+                        60% {
+                          counter-increment: count 60;
+                        }
+                        70% {
+                          counter-increment: count 70;
+                        }
+                        80% {
+                          counter-increment: count 80;
+                        }
+                        90% {
+                          counter-increment: count 90;
+                        }
+                        92% {
+                          counter-increment: count 92;
+                        }
+                        95% {
+                          counter-increment: count 95;
+                        }
+                        98% {
+                          counter-increment: count 98;
+                        }
+                        99% {
+                          counter-increment: count 99;
+                        }
+                        100% {
+                          counter-increment: count 100;
+                        }
+                      }
+                    </style>    --}}
+
+                    <style>
+                      #loader {
+                        display: none;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        width: 100%;
+                        background: rgba(0,0,0,0.75) url(https://flevix.com/wp-content/uploads/2019/12/Progress-Loading-1.gif) no-repeat center center ;
+                        background-size: 100% 100%;
+                        opacity: 0.7;
+                        z-index: 10000;
+                      }
+                    </style>
+                  
                     <div class="row">
                       <div class="col-lg-12">
-                        <div class="card card-horizontal card-default card-md mb-4">
+                        <div id="loader" class="hidden" style="display:none">
+                          {{-- <div class="form-group row mb-3">
+                            <div class="col-md-2">
+                            </div>
+                            <div class="col-md-8">
+                              <div class="progress">
+                                <span class="percent">%</span>
+                              </div>
+                            </div>
+                            <div class="col-md-2">
+                            </div>
+                          </div> --}}
+                        </div>
+                        <div id="card_id" class="card card-horizontal card-default card-md mb-4">
                             <div class="card-header">
                                 <h6>Compose Email</h6>
                             </div>
                             <div class="card-body py-md-30">
                                 <div class="horizontal-form">
-                                    <form  action="{{url('admin/insert_email')}}" method="POST" enctype="multipart/form-data">
+                                    <form id="some-form" action="{{url('admin/insert_email')}}" method="POST" enctype="multipart/form-data">
                                       @csrf
                                       <div id="sender_email" class="card card-horizontal card-default card-md mb-4 bg-outline-dark border-1">
                                         <div class="card-header text-dark">
@@ -175,7 +292,7 @@
                                           <div class="form-group row mb-3">  
                                             <div class="col-sm-12">
                                               <select name="sender_email" class="form-control js-example-basic-single">
-                                                <option value="text-dark" value="" selected disabled>Select A Sender Email </option>
+                                                <option value="text-dark" value="" selected disabled>Select A Sender Email  <span style="color:red;">&nbsp;*</span></option>
                                                 @foreach($sendemail as $row)
                                                   <option class="text-dark" value="{{$row->email_id}}">{{$row->email_id}}</option>
                                                 @endforeach
@@ -193,7 +310,7 @@
                                         <div class="card-body py-md-30 text-dark">
                                           <div class="form-group row mb-3">
                                             <div class="col-sm-6">
-                                              <span class="">Select Template Category <span style="color:red;">&nbsp;*</span></span>
+                                              <span class="">Select Template Category</span>
                                             </div>
                                           </div>
                                           <div class="form-group row">
@@ -213,7 +330,7 @@
 
                                           <div class="form-group row mb-3">
                                             <div class="col-sm-6">
-                                              <span class="">Select Template <span style="color:red;">&nbsp;*</span></span>
+                                              <span class="">Select Template</span>
                                             </div>
                                           </div>
                                           <div class="form-group row">
@@ -239,11 +356,48 @@
                                               <div class="atbd-switch-wrap d-flex align-items-center">
                                                 <div class="custom-control custom-switch switch-primary switch-md ">
                                                     <input type="checkbox" class="custom-control-input" id="switch-s2" value="0" checked>
-                                                    <label class="custom-control-label" for="switch-s2">Template Use <span style="color:red;">&nbsp;*</span></label>
+                                                    <label class="custom-control-label" for="switch-s2">Template Use</label>
                                                 </div>
                                               </div>
                                             </div>
                                           </div>
+                                          
+                                          <div id="show_category">
+                                            <div class="form-group row mb-3">
+                                              <div class="col-sm-6">
+                                                <span class="">Select Template Category</span>
+                                              </div>
+                                            </div>
+                                            <div class="form-group row">
+                                              <div class="col-sm-12">
+                                                <div class="select-style2">
+                                                  <div class="atbd-select">
+                                                    <select name="new_template_category" id="show_name_category" class="form-control js-example-basic-single">
+                                                        <option class="text-dark" value="" selected>Select a Template Category *</option>
+                                                        @foreach($name as $rowsd)
+                                                          <option class="text-dark" value="{{$rowsd->id}}">{{$rowsd->temp_category_name}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                  </div>
+                                                </div>                                            
+                                              </div>
+                                            </div>
+                                            <input type="hidden" id="empty" name="empty">
+                                            <div class="form-group row mb-3">
+                                              <div class="col-sm-6">
+                                                <span class="">Template Name</span>
+                                              </div>
+                                            </div>
+                                            <div class="form-group row">
+                                              <div class="col-sm-9">
+                                                  <input type="text" class="form-control ih-medium ip-light radius-xs b-light px-15" id="random_name" name="category_name" value="{{old('category_name')}}" placeholder="Template name" autocomplete="off">
+                                              </div>
+                                              <div class="col-sm-3">
+                                                <input id="clickMe" class="btn btn-primary btn-md" type="button" value="Generate Random Name" onclick="generateName();" />
+                                              </div>
+                                            </div>
+                                          </div>
+
                                           <div class="form-group row mb-3">
                                             <div class="col-sm-6">
                                               <span class="">Template Subject<span style="color:red;">&nbsp;*</span></span>
@@ -257,7 +411,7 @@
 
                                           <div class="form-group row mb-3">
                                             <div class="col-sm-6">
-                                              <span class="">Template Body HTML type <span style="color:red;">&nbsp;*</span></span>
+                                              <span class="">Template Body HTML type</span>
                                             </div>
                                           </div>
 
@@ -266,13 +420,41 @@
                                                 <textarea class="form-control" placeholder="Leave a comment here"  id="html_desc" name="template_body" style="height: 100px;"></textarea>
                                             </div>
                                           </div>
+                                          <div class="form-group row mb-3">
+                                            <div class="col-sm-3">
+                                              <button type="button" class="btn btn-outline-primary" id="trigger_template">Save as Template</button>
+                                            </div>
+                                            <div class="col-sm-3">
+                                              <input type="hidden" name="template_category_hidden" id="hidden_category" value="0">
+                                              <span id="p"></span>
+                                            </div>
+                                            <div class="col-sm-3">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div id="new_user" class="form-group row mb-3"  style="padding-left:10px;">
+                                        <div class="col-sm-12">
+                                          <div class="form-check-inline h5 text-dark">
+                                            <input class="form-check-input" type="radio" name="file_type" id="image_1" value='1' checked  style="font-size:1.00rem;align-items:center;">
+                                            <label class="form-check-label" for="image_1" style="font-size: 80%;padding-left:5px; ">
+                                              Existing User 
+                                            </label>
+                                          </div>
+                                          <div class="form-check-inline h5 text-dark">
+                                            <input class="form-check-input" type="radio" name="file_type" id="image_2" value='2' style="font-size:1.00rem;align-items:center;" >
+                                            <label class="form-check-label" for="image_2"  style="font-size: 80%;padding-left:5px; "> 
+                                              New User
+                                            </label>
+                                          </div> 
                                         </div>
                                       </div>
 
 
                                       <div id="category_type" class="card card-horizontal card-default card-md mb-4 bg-outline-dark border-1">
                                         <div class="card-header text-dark">
-                                            <h6>Category Selection Type</h6>
+                                            <h6>User Selection Type</h6>
                                         </div>
                                         <div class="card-body py-md-30 text-dark">
                                           <div class="form-group row mb-3">
@@ -313,6 +495,24 @@
                                             </div>
                                             <div class="col-sm-1">
                                               <button type="button" class="btn btn-icon btn-circle btn-outline-primary" id="savechanges"><i class="fas fa-save" style="padding-left:6px;"></i></button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div id="existing_user" class="card card-horizontal card-default card-md mb-4 bg-outline-dark border-1">
+                                        <div class="card-header text-dark">
+                                            <h6>User Selection Type</h6>
+                                        </div>
+                                        <div class="card-body py-md-30 text-dark">
+                                          <div class="form-group row mb-3">
+                                            <div class="col-sm-6">
+                                              <span class="">New User</span>
+                                            </div>
+                                          </div>
+                                          <div class="form-group row mb-3">
+                                            <div class="col-sm-12">
+                                              <textarea class="form-control" placeholder="New User"  id="new_user" name="new_user" style="height: 100px;"></textarea>
                                             </div>
                                           </div>
                                         </div>
@@ -389,14 +589,13 @@
                                       <input type="hidden" name="hidden[]" id="hidden">
                                       <input type="hidden" name="last[]" id="last">
 
-
                                       <div class="form-group row">
                                         <div class="col-sm-3">
                                         </div>
                                         <div class="col-sm-9">
                                             <div class="layout-button mt-25">
                                                 <input type="button" class="btn btn-default btn-squared border-normal bg-normal px-20" onclick="window.location.href='{{url('admin/send_emails')}}'" value="Cancel">
-                                                <button type="submit" name="submit" class="btn btn-primary btn-default btn-squared px-30">save</button>
+                                                <button type="submit" id="submit-form" name="submit" class="btn btn-primary btn-default btn-squared px-30">Send</button>
                                             </div>
                                         </div>
                                       </div>
@@ -405,7 +604,7 @@
                             </div>
                           </div>
                         </div>
-                    </div>
+                      </div>
                   </div>
               </div>
             </div>
@@ -425,10 +624,10 @@
           <div id="overlayer">
               <span class="loader-overlay">
                   <div class="atbd-spin-dots spin-lg">
-                      <span class="spin-dot badge-dot dot-primary"></span>
-                      <span class="spin-dot badge-dot dot-primary"></span>
-                      <span class="spin-dot badge-dot dot-primary"></span>
-                      <span class="spin-dot badge-dot dot-primary"></span>
+                      <span class="spin-dot badge-dot dot-success"></span>
+                      <span class="spin-dot badge-dot dot-success"></span>
+                      <span class="spin-dot badge-dot dot-success"></span>
+                      <span class="spin-dot badge-dot dot-success"></span>
                   </div>
               </span>
           </div>
@@ -494,14 +693,139 @@
           <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
           <script src="{{asset('css/multiselect/jquery.multiselect.js')}}"></script>
           <link rel="stylesheet" href="{{asset('css/multiselect/jquery.multiselect.css')}}">
+
+          <script>
+            $('#show_name_category').on('change',function(){
+              let id = $(this).val();
+              $.ajaxSetup({
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+              });
+              $.ajax({
+                  url:"{{url('admin/count')}}",
+                  type:"POST",
+                  data: {cat_id:id},
+                  success:function(data) 
+                  {
+                    $('#empty').val(data.subcategories);
+                  }
+              })
+            });
+            $('#clickMe').on('click',function(){
+              
+              let id =$('#category').val();
+              if(!id || id.length === 0 )
+              {
+                alert('Plese Select a Category');
+              }
+              else
+              {
+                var first_name = [$('#category option:selected').text()];
+                var last_name = $('#empty').val();
+                var name ='';
+                if(last_name == 0)
+                {
+                  var x = $('#empty').val();
+                  var name = first_name +'_temp_'+x;
+                  $("#random_name").val(name);
+                }
+                else
+                {
+                  var x = $('#empty').val();
+                  var name = first_name +'_temp_'+x;
+                  $("#random_name").val(name);
+                }
+              }
+            });
+
+            function generateName()
+            {
+              let id =$('#category').val();
+              if(!id || id.length === 0 )
+              {
+                alert('Plese Select a Category');
+              }
+              else
+              {
+                var first_name = [$('#category option:selected').text()];
+                var last_name = $('#empty').val();
+                var name ='';
+                if(last_name == 0)
+                {
+                  var x = $('#empty').val();
+                  var name = first_name +'_temp_'+x;
+                  $("#random_name").val(name);
+                }
+                else
+                {
+                  var x = $('#empty').val();
+                  var name = first_name +'_temp_'+x;
+                  $("#random_name").val(name);
+                }
+              }
+            }
+          </script>
+          <script>
+            $('#trigger_template').hide();
+            $('#trigger_template').on('click',function()
+            {
+              $('#hidden_category').val(1);
+              $('#p').html('<p>Save Successfully</p>');
+            });
+          </script>
+            <script>
+              $('#show_category').hide();
+              let form = document.querySelector('#some-form');
+              let vallue = document.querySelector('#card_id');
+              let loader = document.querySelector('#loader');
+
+              form.addEventListener('submit', function (event) 
+              {
+                
+                // using non css framework method with Style
+                loader.style.display = 'block';
+                vallue.style.display = 'none';
+              
+                // using a css framework such as TailwindCSS
+                loader.classList.remove('hidden');
+
+                // pretend the form has been sumitted and returned
+              });
+            </script>
+          <script>
+            
+
+            if($('#image_1').is(':checked'))
+            {
+              $("#category_type").show();
+              $('#existing_user').hide();
+            }
+
+            $('#image_1').bind('change', function () {
+              if ($(this).is(':checked'))
+              {
+                $("#category_type").show().removeAttr('checked',true);
+                $('#existing_user').hide();
+              }
+            });
+            
+            $("#image_2").bind('change', function(){
+              if ($(this).is(':checked'))
+              {
+                $("#category_type").hide();
+                $('#existing_user').show().attr('checked',true);
+
+              }
+            });
+          </script>
           <script>
             $('#filter_country').hide();
             $('#template_category_type').hide();
-
+            $('#new_user').hide();
             $('#sender_email').on('change',function()
             {
               $('#template_category_type').show();
-
             });
 
             $('#switch-s3').on('change',function()
@@ -594,10 +918,15 @@
                     }
                     if(template.length > 0)
                     {
-                      $('#with_sub_category').append('<option class="text-dark" value="" selected disabled>Select a Sub Category*</option>');
+                      $('#with_sub_category').append('<option class="text-dark" value="">Select a Sub Category*</option>');
 
                       $.each(template,function(index,template_sub_category)
                       {
+                        
+                        if(template_sub_category.id == 0)
+                        {
+                          $('#with_sub_category').append('<option class="text-dark" value="0" selected disabled>None</option>');
+                        }
                         $('#with_sub_category').append('<option class="text-dark" selected value="'+template_sub_category.id+'">'+template_sub_category.sub_category_name+'</option>');
                       });
                     }
@@ -620,8 +949,8 @@
               {
                 $('#hidden').val('');
                 $('#ms-list-1').addClass('ms-active');
-                jQuery.noConflict();
                 var sun = $('#with_sub_category').val();
+                var id = $('#multiple').val();
                 var sub = $('#hidden').val();
                 if(sub.length == 0)
                 {
@@ -632,6 +961,54 @@
                   var result = sub+','+sun;
                   $('#hidden').val(sun);
                 }
+
+                $.ajaxSetup({
+                headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                });
+
+                $.ajax({
+                  url:"{{url('admin/send_emails_count')}}",
+                  type:"POST",
+                  data: {sub_category:sun,template_sub_category:id},
+                  success:function(data) 
+                  {
+                    $('#with_sub_category').empty();
+                    var template = data.template_sub_category;
+                    var name = data.subcategoru_if;
+                    var hidden = $('#hidden').val();
+                    if(hidden.length == 0)
+                    {
+                      $('#hidden').val(name);
+                    }
+                    else
+                    {
+                      var lkd = name;
+                      $('#hidden').val(lkd);
+                    }
+                    if(template.length > 0)
+                    {
+                      $('#with_sub_category').append('<option class="text-dark" value="">Select a Sub Category*</option>');
+
+                      $.each(template,function(index,template_sub_category)
+                      {
+                        if(sun == template_sub_category.id)
+                        {
+                          $('#with_sub_category').append('<option class="text-dark" value="'+template_sub_category.id+'" selected>'+template_sub_category.sub_category_name+'</option>');
+                        }
+                        else
+                        {
+                          $('#with_sub_category').append('<option class="text-dark" value="'+template_sub_category.id+'">'+template_sub_category.sub_category_name+'</option>');
+                        }
+                      });
+                    }
+                    $('#user_id').html(data.users.length);
+                    $('#hidden_user_count').val(data.users.length);
+                    $('#user_count').val(data.users);
+                  }
+                })
+
               }
             });
           </script>
@@ -641,6 +1018,8 @@
             $('#category_type').hide();
             $('#subcategory').on('change',function() 
             {
+              $('#category_type').show();
+              $('#new_user').show();
               let id = $(this).val();
               $.ajaxSetup({
               headers: {
@@ -666,13 +1045,14 @@
                       if($('#switch-s2').val() == 0)
                       {
                         $('#showforquesvideo').show();
-                        $('#category_type').show();
                       }
                       $('#switch-s2').on('change',function()
                       {
                         var status = $(this).prop('checked') == true ? 1 : 0;
                         if(status == 1)
                         {
+                          $('#trigger_template').hide();
+                          $('#show_category').hide();
                           $('#showforquesvideo').show();
                           $('#category_type').show();
                           $('#quiz_question_default_image').val(subcategory.template_subject);
@@ -680,9 +1060,11 @@
                         }
                         else
                         {
+                          $('#trigger_template').show();
+                          $('#show_category').show();
                           $('#showforquesvideo').show();
                           $('#category_type').show();
-                          $('#quiz_question_default_image').val('');
+                          $('#quiz_question_default_image').val(' ');
                           editor.setData('');
                         }
                       });
@@ -888,28 +1270,6 @@
             $('#all').hide();
             $('#category_sub_select').hide();
             $('#div_quiz_question').hide();
-            function quesishtml() 
-            {
-                var check_type = $('input[name="question_format_type"]:checked').val();
-                if (check_type == 1) 
-                {
-                  $("#all").show();
-                  $('#category_select').hide();
-                  $('#category_sub_select').hide();
-                } 
-                else if(check_type == 2)
-                {
-                  $("#all").hide();
-                  $('#category_select').show();
-                  $('#category_sub_select').hide();
-                }
-                else if(check_type == 3)
-                { 
-                  $("#all").hide();
-                  $('#category_select').hide();
-                  $('#category_sub_select').show();
-                }
-            }
           </script>
        
 
