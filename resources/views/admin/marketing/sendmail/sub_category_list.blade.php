@@ -60,7 +60,8 @@
     <link rel="icon" type="admin/png" sizes="16x16" href="{{asset('img/favicon.png')}}">
 
     <style>
-      .select2-container--default .select2-selection--single, .select2-container--default .select2-selection--multiple{
+      .select2-container--default .select2-selection--single, .select2-container--default .select2-selection--multiple
+      {
         height: 0% !important;
       }
       .select2-container--default .select2-selection--single .select2-selection__arrow:after{
@@ -163,9 +164,9 @@
                     @endforeach
                   @endif
                       <div class="card">
-                          <div class="card-header color-dark fw-500">
-                            Inbox
-                          </div>
+                        <div class="card-header color-dark fw-500">
+                          Inbox
+                        </div>
                           <div class="card-body">
                               <div class="userDatatable global-shadow border-0 bg-white w-100">
                                   <div class="table-responsive">
@@ -266,13 +267,13 @@
                                                   </td>
                                                   <td>
                                                     <div class="userDatatable-content">
-                                                      {{(int)$sub_category->user_count - $sub_category->get_mapped_cat_count->count() ?? ''}}
+                                                      {{$sub_category->available_videos->count() ?? ''}}
                                                     </div>
                                                   </td>
                                                   <td>
                                                     <div class="btn-group">
                                                       <div class="userDatatable-content d-inline-block" >
-                                                        {{ $sub_category->get_mapped_cat_count->count();}} 
+                                                        {{ $sub_category->videos->count();}} 
                                                       </div>
                                                       <div style="padding-left:10px;">
                                                         <button value="{{$sub_category->id}}" class="bg-opacity-success color-success rounded-pill userDatatable-content-status active use-address" style="border:0" id="view">View</button>
@@ -354,7 +355,8 @@
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                                                 </div>
                                                 <style>
-                                                  .select2-container{
+                                                  .select2-container
+                                                  {
                                                     z-index: 999999;
                                                   }
                                                 </style>
@@ -363,7 +365,10 @@
                                                   <div class="modal-body">
                                                     <div class="form-group row">
                                                       <div class="col-sm-12">
-                                                        <select name="sub_category_id[]" multiple="multiple" required id="template_sub_category" class="form-control js-example-basic-multiple" style="z-index: 999;position: absolute;">                                         
+                                                        <select name="sub_category_id[]" multiple="multiple" required class="form-control js-example-basic-multiple" style="z-index: 999;position: absolute;">   
+                                                          @foreach($sub_category->videos as $row)
+                                                            <option value="{{$row->user_id}}" selected="selected">{{$row->bounced_email}}</option>
+                                                          @endforeach
                                                         </select>
                                                       </div>
                                                     </div>
@@ -461,6 +466,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <script src="{{asset('css/multiselect/jquery.multiselect.js')}}"></script>
+    <link rel="stylesheet" href="{{asset('css/multiselect/jquery.multiselect.css')}}">
     <script>
       $('.use-address').on('click',function(){
         var id = $(this).val();
@@ -485,6 +492,7 @@
                 {
                   $('#template_sub_category').append('<option class="text-dark" value="'+template_sub_category.user_id+'" title="'+template_sub_category.reason_message+'" selected>'+template_sub_category.bounced_email+'</option>');
                 })
+                $("#template_sub_category").multiselect();
               }
             }
           })
@@ -495,13 +503,22 @@
     <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
     
     <script>
-      $(document).ready(function() {
-          $('.js-example-basic-multiple').select2({
-            placeholder: {
-                text: 'Select a Email'
-              },
-          }); 
-      });
+      // $(document).ready(function() {
+      //     $('.js-example-basic-multiple').select2({
+      //       placeholder: {
+      //           text: 'Select a Email'
+      //         },
+      //     }); 
+      // });
+
+      $(document).ready(function () {
+          $('.js-example-basic-multiple').multiselect({
+            buttonClass: 'form-select',
+            templates: {
+              button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+            }
+          });
+        });
     </script>
     <!-- End custom js for this page -->
     <script>

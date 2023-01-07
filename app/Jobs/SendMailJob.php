@@ -63,114 +63,151 @@ class SendMailJob implements ShouldQueue
     public function handle()
     {
         $input = $this->mail_data['subject'];
-
+        
         $semd = SendEmail::find($this->mail_data['subject']);
-
-        require base_path("vendor/autoload.php");
+        
+        $formEmail  = $semd->sender_email;
+        $subject = $semd->maerketing_name;
+        $html = $semd->maerketing_short_description;
 
         $source = SourceEmail::where('email_id',$semd->sender_email)->first();
 
-        $mail = new PHPMailer(true);    
-        try
+        $explode = explode(',',$semd->user_id);
+
+        $users = EmailUser::whereIn('id',$explode)->get();
+        // $users = EmailUser::whereIn('id', $explode)->where('id','>',2)->get();
+
+        foreach($users as $mail)
         {
-            $mail->SMTPDebug = 0;
-            $mail->isSMTP();
-            $mail->Host = $source->mail_host;
-            $mail->SMTPAuth = true;
-            $mail->Username = $source->user_name;
-            $mail->Password = $source->password;
-            $mail->SMTPSecure = 'tls';
-            $mail->Port = 587;
-            $mail->setFrom($semd->sender_email);
+            $mails = $mail->user_email;
 
-            if($semd->new_user_type	 == 2)
+            list($username, $domain) = explode('@', $mails);
+            if(checkdnsrr($domain, 'MX'))
             {
-                $explode = explode(',',$semd->new_user);
-
-                foreach($explode as $roes)
+                try
                 {
-                    $mail->AddBCC($roes);
-                }
-            }
+                    ini_set('memory_limit', '-1');
 
-            if($semd->new_user_type	 == 1)
-            {
-                $implode = explode(',',$semd->user_id);
-                $EmailUser = EmailUser::whereIn('id',$implode)->pluck('user_email')->toArray();
-                foreach($EmailUser as $row)
-                {
-                    $mail->AddBCC($row);
-                }
-            }
-            
-            $mail->isHTML(true);
-
-            $mail->Subject = $semd->maerketing_name;
-            $mail->Body = $semd->maerketing_short_description;
-            
-            if($mail->send()) 
-            {
-                $mail_processing = SendEmail::find($this->mail_data['subject'])->update(['mail_processing' => 2]);
-                dd('Mail Send Successfullyyyy');
-            }
-            else
-            {
-                return back()->with("error", "Email not sent.")->withErrors($mail->ErrorInfo);
-            }
-        } 
-        catch (\phpmailerException $e) 
-        {
-            dd($e->getMessage());
-            return back()->with("error", $e->getMessage());
-        }
-        catch (\Exception $e)
-        {
-            $string = $e->getMessage();
-
-            $explode = explode(':',$string);
-
-            unset($explode[0],$explode[1],$explode[2]); 
-
-            $array = array_values($explode);
-
-            $test_patt = "/(?:[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/";
-            
-            $check_if_email = preg_match_all($test_patt, $string, $matches);
-
-            if($check_if_email > 0)
-            {
-                $allemails = implode(',',$matches[0]);
-                $alldsjn = explode(',',$allemails);
-
-                $unique_email = array_unique($alldsjn);
-                $unique_email = array_values($unique_email);
-
-                foreach($unique_email as $key => $bounced_emails)
-                {
-                    $BounsedEmail = BounsedEmail::where('bounced_email',$bounced_emails)->count();
-                    $EmailUser = EmailUser::where('user_email',$bounced_emails)->first();
-                    if($BounsedEmail > 2)
+                    Mail::raw($html, function($message) use($mails, $subject, $formEmail)
                     {
-                        $EmailUer = EmailUser::where('user_email',$bounced_emails)->first();
-                        $EmailUer->block = 2;
-                        $EmailUer->save();
-                    }
-                    $bounced = new BounsedEmail;
-                    $bounced->bounced_email = $bounced_emails;
-                    $bounced->user_id = $EmailUser->id ?? '1';
-                    $bounced->bounced = $BounsedEmail + 1;
-                    $bounced->send_email_id = $this->mail_data['subject'];
-                    $bounced->reason_message = $string;
-                    $bounced->save();
-                    $mail_processing = SendEmail::find($this->mail_data['subject'])->update(['mail_processing' => 2]);
+                        $message->from($formEmail);
+                        $message->to($mails);
+                        $message->subject($subject);
+                    });
 
+                    $storage = new BounsedEmail;
+                    $storage->bounced_email = $mails;
+                    $storage->bounced = 1;
+                    $storage->send_email_id = $this->mail_data['subject'];
+                    $storage->reason_message = "Mail send";
+                    $storage->user_id = $mail->id;
+                    $storage->save();
+                    $mail_processing = SendEmail::find($this->mail_data['subject'])->update(['mail_processing' => 2]);
                 }
-                dd('message','Mail Send Successfully');
+                catch(\Exception $e)
+                {
+                    ini_set('memory_limit', '-1');
+                    $storage = new BounsedEmail;
+                    $storage->bounced_email = $mails;
+                    $storage->bounced = 2;
+                    $storage->send_email_id = $this->mail_data['subject'];
+                    $storage->reason_message = $e->getMessage();
+                    $storage->user_id = $mail->id;
+                    $storage->save();
+                    $coordinates = $this->second_queue($mails);
+                }
             }
-            else
+            else 
             {
-                dd('message','Mail Send Successfully mugaam');
+                ini_set('memory_limit', '-1');
+                $storage = new BounsedEmail;
+                $storage->bounced_email = $mails;
+                $storage->bounced = 2;
+                $storage->send_email_id = $this->mail_data['subject'];
+                $storage->reason_message = "Mail Bounced";
+                $storage->user_id = $mail->id;
+                $storage->save();
+                $coordinates = $this->second_queue($mails);
             }
+        }
+    }
+
+
+    private function second_queue($postcode)
+    {
+        $semd = SendEmail::find($this->mail_data['subject']);
+        $formEmail  = $semd->sender_email;
+        $subject = $semd->maerketing_name;
+        $html = $semd->maerketing_short_description;
+
+        $source = SourceEmail::where('email_id',$semd->sender_email)->first();
+
+        $explode = explode(',',$semd->user_id);
+
+        $simple = EmailUser::where('user_email',$postcode)->first();
+
+        $users = EmailUser::whereIn('id', $explode)->where('id','>',$simple->id)->get();
+
+        if(!empty($users))
+        {
+            foreach($users as $mail)
+            {
+                $mails = $mail->user_email;
+
+                list($username, $domain) = explode('@', $mails);
+                if(checkdnsrr($domain, 'MX'))
+                {
+                    try
+                    {
+                        ini_set('memory_limit', '-1');
+
+                        Mail::raw($html, function($message) use($mails, $subject, $formEmail)
+                        {
+                            $message->from($formEmail);
+                            $message->to($mails);
+                            $message->subject($subject);
+                        });
+
+                        $storage = new BounsedEmail;
+                        $storage->bounced_email = $mails;
+                        $storage->bounced = 1;
+                        $storage->send_email_id = $this->mail_data['subject'];
+                        $storage->reason_message = "Mail send";
+                        $storage->user_id = $mail->id;
+                        $storage->save();
+                        
+                    }
+                    catch(\Exception $e)
+                    {
+                        ini_set('memory_limit', '-1');
+                        $storage = new BounsedEmail;
+                        $storage->bounced_email = $mails;
+                        $storage->bounced = 2;
+                        $storage->send_email_id = $this->mail_data['subject'];
+                        $storage->reason_message = $e->getMessage();
+                        $storage->user_id = $mail->id;
+                        $storage->save();
+                        $coordinates = $this->second_queue($mails);
+                    }
+                }
+                else
+                {
+                    ini_set('memory_limit', '-1');
+                    $storage = new BounsedEmail;
+                    $storage->bounced_email = $mails;
+                    $storage->bounced = 2;
+                    $storage->send_email_id = $this->mail_data['subject'];
+                    $storage->reason_message = "Mail Bounced";
+                    $storage->user_id = $mail->id;
+                    $storage->save();
+                    $coordinates = $this->second_queue($mails);
+                }
+            }
+        }
+        else
+        {
+            $mail_processing = SendEmail::find($this->mail_data['subject'])->update(['mail_processing' => 2]);
+            dd("Mail has been send");
         }
     }
 }

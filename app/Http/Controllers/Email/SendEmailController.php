@@ -171,7 +171,7 @@ class SendEmailController extends Controller
     public function block_list_count(Request $request)
     {
         $block =  $request->block_id;
-        $block_list = BounsedEmail::where('send_email_id',$block)->get();
+        $block_list = BounsedEmail::where('send_email_id',$block)->where('bounced','2')->get();
         return response()->json(['subcategories' => $block_list]);
     }
 
@@ -902,6 +902,7 @@ class SendEmailController extends Controller
                 $newuser->save();
             }
         }
+
         if($request->file_type == 1)
         {
             $user->new_user_type = 1;

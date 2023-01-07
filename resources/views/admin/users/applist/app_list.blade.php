@@ -216,7 +216,7 @@
                                                   </td>
                                                   <td>
                                                       <div class="userDatatable-content d-inline-block">
-                                                        @if($app->is_active == '0')
+                                                        @if($app->block == '1')
                                                           <span class="bg-opacity-success  color-success rounded-pill userDatatable-content-status active">active</span>
                                                         @else
                                                         <span class="bg-opacity-warning  color-warning rounded-pill userDatatable-content-status active">deactivate</span>

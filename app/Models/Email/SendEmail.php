@@ -37,4 +37,18 @@ class SendEmail extends Model
     {
         return $this->hasMany('App\Models\Email\BounsedEmail','send_email_id');
     }
+
+    public function list_map()
+    {
+        return $this->hasMany('App\Models\Email\BounsedEmail','send_email_id');
+    }
+
+    public function videos() {
+        return $this->get_mapped_cat_count()->where('bounced','=', 2);
+    }
+
+    // results in a "problem", se examples below
+    public function available_videos() {
+        return $this->get_mapped_cat_count()->where('bounced','=', 1);
+    }
 }
