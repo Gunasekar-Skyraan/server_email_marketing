@@ -65,7 +65,6 @@ class SendMailJob implements ShouldQueue
         $input = $this->mail_data['subject'];
         
         $semd = SendEmail::find($this->mail_data['subject']);
-        
         $formEmail  = $semd->sender_email;
         $subject = $semd->maerketing_name;
         $html = $semd->maerketing_short_description;
@@ -75,7 +74,6 @@ class SendMailJob implements ShouldQueue
         $explode = explode(',',$semd->user_id);
 
         $users = EmailUser::whereIn('id',$explode)->get();
-        // $users = EmailUser::whereIn('id', $explode)->where('id','>',2)->get();
 
         foreach($users as $mail)
         {
@@ -102,7 +100,9 @@ class SendMailJob implements ShouldQueue
                     $storage->reason_message = "Mail send";
                     $storage->user_id = $mail->id;
                     $storage->save();
-                    $mail_processing = SendEmail::find($this->mail_data['subject'])->update(['mail_processing' => 2]);
+                    
+                    $semd->mail_processing = 2;
+                    $semd->save();
                 }
                 catch(\Exception $e)
                 {
@@ -206,8 +206,9 @@ class SendMailJob implements ShouldQueue
         }
         else
         {
-            $mail_processing = SendEmail::find($this->mail_data['subject'])->update(['mail_processing' => 2]);
-            dd("Mail has been send");
+            $mail_processing = SendEmail::find($this->mail_data['subject']);
+            $mail_processing->mail_processing = 2;
+            $mail_processing->save();
         }
     }
 }
