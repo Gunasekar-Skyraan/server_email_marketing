@@ -206,7 +206,9 @@ class SendMailJob implements ShouldQueue
         }
         else
         {
-            $mail_processing = SendEmail::find($this->mail_data['subject'])->update(['mail_processing' => 2]);
+            $mail_processing = SendEmail::find($this->mail_data['subject']);
+            $mail_processing->mail_processing = 2;
+            $mail_processing->save();
             dd("Mail has been send");
         }
     }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Email;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Arr;
+
 
 
 use App\Models\Email\SendEmail;
@@ -907,6 +909,7 @@ class SendEmailController extends Controller
         {
             $user->new_user_type = 1;
         }
+        
         $user->mail_processing = 1;
                 
         $user->save();

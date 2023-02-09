@@ -1578,7 +1578,7 @@
 
 
 
-$input = $this->mail_data['subject'];
+        $input = $this->mail_data['subject']; 
 
         $semd = SendEmail::find($this->mail_data['subject']);
 
