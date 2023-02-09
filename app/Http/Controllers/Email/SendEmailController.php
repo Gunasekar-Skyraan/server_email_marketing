@@ -667,8 +667,6 @@ class SendEmailController extends Controller
     {
         $sender = $request->sender_email;
 
-        AppHelper::setMailConfig($sender);
-
         $request->validate([
             'sender_email' => 'required',
         ]);

@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Config;
 
 
 
@@ -62,14 +63,23 @@ class SendMailJob implements ShouldQueue
      */
     public function handle()
     {
+        
         $input = $this->mail_data['subject'];
         
         $semd = SendEmail::find($this->mail_data['subject']);
+        //
+        
+        $source = SourceEmail::where('email_id',$semd->sender_email)->first();
+        
+        // define('EMAIL_HOST', $source->mail_host ?? '');
+        // define('EMAIL_PORT', 465 ??  587);
+        // define('EMAIL_USERNAME', $source->user_name ?? '');
+        // define('EMAIL_PASSWORD', $source->password ??  '');
+        // define('EMAIL_ENCRYPTION', null ??  '');
+        
         $formEmail  = $semd->sender_email;
         $subject = $semd->maerketing_name;
         $html = $semd->maerketing_short_description;
-
-        $source = SourceEmail::where('email_id',$semd->sender_email)->first();
 
         $explode = explode(',',$semd->user_id);
 
@@ -86,7 +96,7 @@ class SendMailJob implements ShouldQueue
                 {
                     ini_set('memory_limit', '-1');
 
-                    Mail::raw($html, function($message) use($mails, $subject, $formEmail)
+                    $mmails = Mail::html($html, function($message) use($mails, $subject, $formEmail)
                     {
                         $message->from($formEmail);
                         $message->to($mails);
@@ -153,7 +163,6 @@ class SendMailJob implements ShouldQueue
             foreach($users as $mail)
             {
                 $mails = $mail->user_email;
-
                 list($username, $domain) = explode('@', $mails);
                 if(checkdnsrr($domain, 'MX'))
                 {
@@ -161,7 +170,7 @@ class SendMailJob implements ShouldQueue
                     {
                         ini_set('memory_limit', '-1');
 
-                        Mail::raw($html, function($message) use($mails, $subject, $formEmail)
+                        Mail::html($html, function($message) use($mails, $subject, $formEmail)
                         {
                             $message->from($formEmail);
                             $message->to($mails);
