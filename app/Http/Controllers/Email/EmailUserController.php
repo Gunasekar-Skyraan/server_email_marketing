@@ -19,7 +19,11 @@ use Carbon\Carbon;
 class EmailUserController extends Controller
 {
     
-    
+    public function category_list(Request $request){
+        $category = EmailCategory::all();
+        return response()->json(['data'=>$category]);
+    }
+
     public function show()
     {
         $role = Auth::guard('admin')->user()->role;

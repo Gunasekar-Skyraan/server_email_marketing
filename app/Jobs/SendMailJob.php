@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Config;
 
 
 
@@ -62,20 +63,21 @@ class SendMailJob implements ShouldQueue
      */
     public function handle()
     {
+        
         $input = $this->mail_data['subject'];
         
         $semd = SendEmail::find($this->mail_data['subject']);
+        //
+        
+        $source = SourceEmail::where('email_id',$semd->sender_email)->first();
         
         $formEmail  = $semd->sender_email;
         $subject = $semd->maerketing_name;
         $html = $semd->maerketing_short_description;
 
-        $source = SourceEmail::where('email_id',$semd->sender_email)->first();
-
         $explode = explode(',',$semd->user_id);
 
         $users = EmailUser::whereIn('id',$explode)->get();
-        // $users = EmailUser::whereIn('id', $explode)->where('id','>',2)->get();
 
         foreach($users as $mail)
         {
@@ -88,7 +90,7 @@ class SendMailJob implements ShouldQueue
                 {
                     ini_set('memory_limit', '-1');
 
-                    Mail::raw($html, function($message) use($mails, $subject, $formEmail)
+                    $mmails = Mail::html($html, function($message) use($mails, $subject, $formEmail)
                     {
                         $message->from($formEmail);
                         $message->to($mails);
@@ -102,7 +104,9 @@ class SendMailJob implements ShouldQueue
                     $storage->reason_message = "Mail send";
                     $storage->user_id = $mail->id;
                     $storage->save();
-                    $mail_processing = SendEmail::find($this->mail_data['subject'])->update(['mail_processing' => 2]);
+                    
+                    $semd->mail_processing = 2;
+                    $semd->save();
                 }
                 catch(\Exception $e)
                 {
@@ -153,7 +157,6 @@ class SendMailJob implements ShouldQueue
             foreach($users as $mail)
             {
                 $mails = $mail->user_email;
-
                 list($username, $domain) = explode('@', $mails);
                 if(checkdnsrr($domain, 'MX'))
                 {
@@ -161,7 +164,7 @@ class SendMailJob implements ShouldQueue
                     {
                         ini_set('memory_limit', '-1');
 
-                        Mail::raw($html, function($message) use($mails, $subject, $formEmail)
+                        Mail::html($html, function($message) use($mails, $subject, $formEmail)
                         {
                             $message->from($formEmail);
                             $message->to($mails);
@@ -206,9 +209,7 @@ class SendMailJob implements ShouldQueue
         }
         else
         {
-            $mail_processing = SendEmail::find($this->mail_data['subject']);
-            $mail_processing->mail_processing = 2;
-            $mail_processing->save();
+            $mail_processing = SendEmail::find($this->mail_data['subject'])->update(['mail_processing' => 2]);
             dd("Mail has been send");
         }
     }

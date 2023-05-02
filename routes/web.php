@@ -38,6 +38,8 @@ Route::group(['prefix' => 'admin'], function()
 	
 	Route::group(['middleware' => 'admin.auth'], function()
     {
+        Route::get('/email_cv', [App\Http\Controllers\Email\EmailUserController::class,'category_list'])->name('admin.category_list');
+
         Route::get('/dashboard', [App\Http\Controllers\AdminController::class,'dashboard'])->name('admin/dashboard');
 
         //category_list 
@@ -213,7 +215,6 @@ Route::group(['prefix' => 'admin'], function()
         Route::post('/export_url', [App\Http\Controllers\Email\EmailUserController::class,'export_url'])->name('admin.export_url'); 
 
         Route::post('/insert_export_email', [App\Http\Controllers\Email\EmailUserController::class,'insert_export_email'])->name('admin.insert_export_email');
-
 
 	});
 

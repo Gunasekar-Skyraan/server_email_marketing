@@ -14,13 +14,12 @@ class AppHelper
         $mailConfig = [
             'transport' => 'smtp',
             'host' => $settings->mail_host,
-            'port' => '587',
-            'encryption' => 'tls',
+            'port' => 465,
             'MAIL_ENCRYPTION' => null,
             'username' => $settings['user_name'],
             'password' => $settings['password'],
-            'timeout' => null
         ];
         config(['mail.mailers.smtp' => $mailConfig]);
+        
     }
 }
