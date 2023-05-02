@@ -67,8 +67,7 @@ class SendMailJob implements ShouldQueue
         $input = $this->mail_data['subject'];
         
         $semd = SendEmail::find($this->mail_data['subject']);
-        //
-        
+
         $source = SourceEmail::where('email_id',$semd->sender_email)->first();
         
         // define('EMAIL_HOST', $source->mail_host ?? '');
@@ -98,7 +97,6 @@ class SendMailJob implements ShouldQueue
 
                     $mmails = Mail::html($html, function($message) use($mails, $subject, $formEmail)
                     {
-                        $message->from($formEmail);
                         $message->to($mails);
                         $message->subject($subject);
                     });
@@ -172,7 +170,6 @@ class SendMailJob implements ShouldQueue
 
                         Mail::html($html, function($message) use($mails, $subject, $formEmail)
                         {
-                            $message->from($formEmail);
                             $message->to($mails);
                             $message->subject($subject);
                         });
